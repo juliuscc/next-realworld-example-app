@@ -3,9 +3,12 @@ import useSWR from "swr";
 
 import Banner from "../components/home/Banner";
 import MainView from "../components/home/MainView";
-import Tags from "../components/home/Tags";
 import { SERVER_BASE_URL } from "../lib/utils/constant";
 import fetcher from "../lib/utils/fetcher";
+import PageContext from "../lib/context/PageContext";
+
+import Tags from "plutt-tags";
+import { Router, useRouter } from "next/router";
 
 const Home = ({ articles: initialArticles, tags: initialTags }) => {
   const { data: fetchedArticles } = useSWR(
@@ -22,6 +25,10 @@ const Home = ({ articles: initialArticles, tags: initialTags }) => {
   const { articles, articlesCount } = fetchedArticles || initialArticles;
   const { tags } = fetchedTags || initialTags;
 
+  const { setPage } = React.useContext(PageContext);
+
+  const router = useRouter();
+
   return (
     <div className="home-page">
       <Banner />
@@ -32,7 +39,14 @@ const Home = ({ articles: initialArticles, tags: initialTags }) => {
           <div className="col-md-3">
             <div className="sidebar">
               <p>Popular Tags</p>
-              <Tags tags={tags} />
+              <Tags
+                tags={tags}
+                onClick={(tag) => {
+                  setPage(0);
+                  router.push(`/?tag=${tag}`, undefined, { shallow: true });
+                }}
+                shadow={false}
+              />
             </div>
           </div>
         </div>
